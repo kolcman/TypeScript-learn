@@ -1,13 +1,19 @@
-var TEN: number = 10;
-var ONE_HUNDRED: number = 100;
-var ONE_THOUSAND: number = 1000;
-var ONE_MILLION: number = 1000000;
-var ONE_BILLION: number = 1000000000; //         1.000.000.000 (9)
-var ONE_TRILLION: number = 1000000000000; //     1.000.000.000.000 (12)
-var ONE_QUADRILLION: number = 1000000000000000; // 1.000.000.000.000.000 (15)
-var MAX: bigint = 9007199254740992n; // 9.007.199.254.740.992 (15)
+"use strict";
 
-var LESS_THAN_TWENTY: string[] = [
+var makeOrdinal = require("./makeOrdinal");
+var isFinite = require("./isFinite");
+var isSafeNumber = require("./isSafeNumber");
+
+var TEN = 10;
+var ONE_HUNDRED = 100;
+var ONE_THOUSAND = 1000;
+var ONE_MILLION = 1000000;
+var ONE_BILLION = 1000000000; //         1.000.000.000 (9)
+var ONE_TRILLION = 1000000000000; //     1.000.000.000.000 (12)
+var ONE_QUADRILLION = 1000000000000000; // 1.000.000.000.000.000 (15)
+var MAX = 9007199254740992; // 9.007.199.254.740.992 (15)
+
+var LESS_THAN_TWENTY = [
   "zero",
   "one",
   "two",
@@ -30,7 +36,7 @@ var LESS_THAN_TWENTY: string[] = [
   "nineteen",
 ];
 
-var TENTHS_LESS_THAN_HUNDRED: string[] = [
+var TENTHS_LESS_THAN_HUNDRED = [
   "zero",
   "ten",
   "twenty",
@@ -53,7 +59,6 @@ var TENTHS_LESS_THAN_HUNDRED: string[] = [
  */
 function toWords(number: number | string, asOrdinal: boolean): string {
   var words: string;
-
   var num = parseInt(String(number), 10);
 
   if (!isFinite(num)) {
@@ -70,10 +75,12 @@ function toWords(number: number | string, asOrdinal: boolean): string {
   return asOrdinal ? makeOrdinal(words) : words;
 }
 
-function generateWords(number: number) {
-  let remainder: number = 0;
-  let word: string = "";
-  let words: string[] = arguments[1];
+function generateWords(
+  number: number,
+  words: string[] = arguments[1] || [],
+): string {
+  var remainder: number = 0,
+    word: string = "";
 
   // We’re done
   if (number === 0) {
