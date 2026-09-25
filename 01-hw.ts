@@ -58,7 +58,6 @@ var TENTHS_LESS_THAN_HUNDRED = [
  * @returns {string}
  */
 function toWords(number: number | string, asOrdinal?: boolean): string {
-  // Улучшение: объединили объявление и инициализацию
   var num = parseInt(String(number), 10);
 
   if (!isFinite(num)) {
@@ -72,7 +71,6 @@ function toWords(number: number | string, asOrdinal?: boolean): string {
     );
   }
 
-  // Улучшение: убрали лишнее объявление var words: string в начале
   var words = generateWords(num);
   return asOrdinal ? makeOrdinal(words) : words;
 }
@@ -81,17 +79,15 @@ function generateWords(number: number, words?: string[]): string {
   var remainder: number = 0,
     word: string = "";
 
-  // Бизнес-логика: !words корректно отработает для первого вызова с 0
+  // Бизнес-логика нуля сохранена
   if (number === 0) {
     return !words ? "zero" : words.join(" ").replace(/,$/, "");
   }
 
-  // Первый запуск: если массив еще не передан в рекурсию, создаем его
   if (!words) {
     words = [];
   }
 
-  // Если отрицательное, добавляем "minus"
   if (number < 0) {
     words.push("minus");
     number = Math.abs(number);
@@ -109,29 +105,28 @@ function generateWords(number: number, words?: string[]): string {
     }
   } else if (number < ONE_THOUSAND) {
     remainder = number % ONE_HUNDRED;
-    word = generateWords(Math.floor(number / ONE_HUNDRED), words) + " hundred";
+    // Исправлено: убрали words из вложенного вызова, чтобы не дублировать массив
+    word = generateWords(Math.floor(number / ONE_HUNDRED)) + " hundred";
   } else if (number < ONE_MILLION) {
     remainder = number % ONE_THOUSAND;
-    word =
-      generateWords(Math.floor(number / ONE_THOUSAND), words) + " thousand,";
+    word = generateWords(Math.floor(number / ONE_THOUSAND)) + " thousand,";
   } else if (number < ONE_BILLION) {
     remainder = number % ONE_MILLION;
-    word = generateWords(Math.floor(number / ONE_MILLION), words) + " million,";
+    word = generateWords(Math.floor(number / ONE_MILLION)) + " million,";
   } else if (number < ONE_TRILLION) {
     remainder = number % ONE_BILLION;
-    word = generateWords(Math.floor(number / ONE_BILLION), words) + " billion,";
+    word = generateWords(Math.floor(number / ONE_BILLION)) + " billion,";
   } else if (number < ONE_QUADRILLION) {
     remainder = number % ONE_TRILLION;
-    word =
-      generateWords(Math.floor(number / ONE_TRILLION), words) + " trillion,";
+    word = generateWords(Math.floor(number / ONE_TRILLION)) + " trillion,";
   } else if (number <= MAX) {
     remainder = number % ONE_QUADRILLION;
     word =
-      generateWords(Math.floor(number / ONE_QUADRILLION), words) +
-      " quadrillion,";
+      generateWords(Math.floor(number / ONE_QUADRILLION)) + " quadrillion,";
   }
 
   words.push(word);
+  // А вот здесь (в самом конце) контекст words передается дальше по цепочке, как в оригинале
   return generateWords(remainder, words);
 }
 
